@@ -211,8 +211,6 @@ public class Lab1_Baseline {
 			in = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
 			
 			
-			/////////////////////////////////////////////////////////////////////// new
-			
 			try
 			{
 				// create a Buffered Reader object instance with a FileReader
