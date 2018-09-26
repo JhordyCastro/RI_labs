@@ -206,10 +206,6 @@ public class Lab1_Baseline {
 			reader = DirectoryReader.open(FSDirectory.open(Paths.get(indexPath)));
 			IndexSearcher searcher = new IndexSearcher(reader);
 			searcher.setSimilarity(similarity);
-
-			BufferedReader in = null;
-			in = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
-			
 			
 			try
 			{
@@ -274,7 +270,11 @@ public class Lab1_Baseline {
 	
 	
 	
-	
+	/*
+	 * 
+	 * Parses each Query individually
+	 * 
+	 */
 	public void parseQuery(int query_id, String query_text, Analyzer analyzer, IndexSearcher searcher) throws IOException{
 		
 		QueryParser parser = new QueryParser("Body", analyzer);
