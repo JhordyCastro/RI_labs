@@ -1,4 +1,4 @@
-package org.novasearch.tutorials.labs2018;
+package org.novasearch.tutorials.labs2018.RI_labs;
 //Jhordy Castro  Bruno Ramos N�41675
 
 import org.apache.lucene.analysis.Analyzer;
@@ -16,8 +16,11 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -33,6 +36,8 @@ public class Lab1_Baseline {
 	String indexPath = "./index";
 	String docPath = "./data/Answers.csv";
 	String queriesFilePath = "./eval/queries.offline.txt";
+	String filePath = "./eval/results.txt";
+	String output = null;
 
 	boolean create = true;
 
@@ -42,7 +47,6 @@ public class Lab1_Baseline {
 
 		Analyzer analyzer = new StandardAnalyzer(); // analizes the text and creates tokens
 		Similarity similarity = new ClassicSimilarity(); // determines how Lucene weights terms
-		//List<Results> textFileResults = new ArrayList<>();
 		Lab1_Baseline baseline = new Lab1_Baseline();
 
 		// Create a new index
@@ -52,6 +56,7 @@ public class Lab1_Baseline {
 
 		// Search the index
 		baseline.indexSearch(analyzer, similarity);
+		
 	}
 
 	public void openIndex(Analyzer analyzer, Similarity similarity) {
@@ -200,7 +205,7 @@ public class Lab1_Baseline {
 	// ====================================================
 	// Comment and refactor this method yourself
 	public void indexSearch(Analyzer analyzer, Similarity similarity) {
-
+		
 		IndexReader reader = null;
 		try {
 			reader = DirectoryReader.open(FSDirectory.open(Paths.get(indexPath)));
@@ -210,14 +215,13 @@ public class Lab1_Baseline {
 			BufferedReader in = null;
 			in = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
 			
-			
 			/////////////////////////////////////////////////////////////////////// new
 			
 			try
 			{
 				// create a Buffered Reader object instance with a FileReader
 				BufferedReader br = new BufferedReader(new FileReader(queriesFilePath));
-
+				
 				// read the first line from the text file
 				String fileRead = br.readLine();
 
@@ -240,7 +244,7 @@ public class Lab1_Baseline {
 					//Parse the query
 					parseQuery(query_id, query, analyzer, searcher);
 					
-
+					
 					// read next line before looping
 					// if end of file reached 
 					fileRead = br.readLine();
@@ -272,6 +276,7 @@ public class Lab1_Baseline {
 			}
 			e.printStackTrace();
 		}
+		
 	}
 	
 	
@@ -280,7 +285,6 @@ public class Lab1_Baseline {
 	public void parseQuery(int query_id, String query_text, Analyzer analyzer, IndexSearcher searcher) throws IOException{
 		
 		QueryParser parser = new QueryParser("Body", analyzer);
-		
 		System.out.println("Enter query: ");
 
 		String line = query_text;
@@ -307,17 +311,18 @@ public class Lab1_Baseline {
 		
 		System.out.println(header);
 		
+		
 		for (int j = 0; j < hits.length; j++) {
 			try {
-									
+				
 				String queryID = Integer.toString(query_id);
 				Document doc = searcher.doc(hits[j].doc);
 				
 				Integer AnswerId = doc.getField("AnswerId").numericValue().intValue();
 				
 				line_string = queryID + "		" + "Q0" + "	 " + AnswerId + "	 " + (j+1) + "	 " + hits[j].score + "		Run-1	";
-				System.out.println(line_string);			
-								
+				System.out.println(line_string);
+				
 				
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -337,7 +342,4 @@ public class Lab1_Baseline {
 		}
 	}
 	
-	
-	
-
 }
