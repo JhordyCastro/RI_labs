@@ -1,4 +1,4 @@
-package org.novasearch.tutorials.labs2018.RI_labs;
+package org.novasearch.tutorials.labs2018;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

@@ -1,5 +1,5 @@
-package org.novasearch.tutorials.labs2018.RI_labs;
-//Jhordy Castro  Bruno Ramos Nº41675
+package org.novasearch.tutorials.labs2018;
+//Jhordy Castro  Bruno Ramos Nï¿½41675
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -16,6 +16,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -208,91 +209,60 @@ public class Lab1_Baseline {
 
 			BufferedReader in = null;
 			in = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
-			BufferedReader fReader = new BufferedReader(new FileReader(queriesFilePath));
-			
-			//BufferedReader in2 = null;
-			//String n_docPath = "./eval/queries.offline.txt";
-			//BufferedReader in2 = new BufferedReader(new InputStreamReader(n_docPath, StandardCharsets.UTF_8));
 			
 			
-			QueryParser parser = new QueryParser("Body", analyzer);
-			while (true) {
-				System.out.println("Enter query: ");
-
-				String line = in.readLine();
-
-				if (line == null || line.length() == -1) {
-					break;
-				}
-
-				line = line.trim();
-				if (line.length() == 0) {
-					break;
-				}
+			/////////////////////////////////////////////////////////////////////// new
 			
-				
-				Query query;
-				try {
-					query = parser.parse(line);
-				} catch (org.apache.lucene.queryparser.classic.ParseException e) {
-					System.out.println("Error parsing query string.");
-					continue;
-				}
-				
-				
-				TopDocs results = searcher.search(query, 5);
-				ScoreDoc[] hits = results.scoreDocs;
-				
-				String header = "QueryId	Q0	DocId	Rank	Score	RunId ";
+			try
+			{
+				// create a Buffered Reader object instance with a FileReader
+				BufferedReader br = new BufferedReader(new FileReader(queriesFilePath));
 
-				int numTotalHits = results.totalHits;
-				System.out.println(numTotalHits + " total matching documents");
-				
-				String line_string = "";
-				//Integer queryID = 0;
-				System.out.println(header);
-				
-				for (int j = 0; j < hits.length; j++) {
-					try {
-						String fileLines = fReader.readLine(); // The first line is dummy
-					//while(fileLines != null){
-							
-							//String [] queryParts = fileLines.split(":");
-							//queryID = Integer.parseInt(queryParts[0]);
-							Document doc = searcher.doc(hits[j].doc);
-							//String answer = doc.get("Body");
-							Integer AnswerId = doc.getField("AnswerId").numericValue().intValue();
-							//Integer queryid = doc.getField("QueryId").numericValue().intValue();
-							
-							
-							line_string = "QueryID  " + queryid+	" QO 	" + AnswerId + "	" + (j+1) + "	" + hits[j].score + "		Run-1	";
-							System.out.println(line_string);
-						
-						//}
-						
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+				// read the first line from the text file
+				String fileRead = br.readLine();
+
+				// loop until all lines are read
+				while (fileRead != null)
+				{
+
+					// use string.split to load a string array with the values from each line of
+					// the file, using a comma as the delimiter
+					String[] tokenize = fileRead.split(":");
+
+					// assume file is made correctly
+					// and make temporary variables for the three types of data
+					//String tempItem = tokenize[0];
+					int query_id = Integer.parseInt(tokenize[0]);
+					
+					String query = tokenize[1];
 					
 					
-					/*Integer AnswerId = doc.getField("AnswerId").numericValue().intValue();
+					//Parse the query
+					parseQuery(query_id, query, analyzer, searcher);
 					
-					
-					System.out.println("AnswerId:	"+ AnswerId);
-					
-					System.out.println("Rank: " + (j+1));
-					System.out.println("Score: " + hits[j].score);
-					System.out.println("------------------------------------------");
-					
-					System.out.println("Answer: " + answer);
-					System.out.println();*/
+
+					// read next line before looping
+					// if end of file reached 
+					fileRead = br.readLine();
 				}
 
-				if (line.equals("")) {
-					break;
-				}
+				// close file stream
+				br.close();
 			}
+			
+			// handle exceptions
+			catch (FileNotFoundException fnfe)
+			{
+				System.out.println("file not found");
+			}
+
+			catch (IOException ioe)
+			{
+				ioe.printStackTrace();
+			}
+			
+			
+			
 			reader.close();
 		} catch (IOException e) {
 			try {
@@ -303,6 +273,61 @@ public class Lab1_Baseline {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	
+	
+	public void parseQuery(int query_id, String query_text, Analyzer analyzer, IndexSearcher searcher) throws IOException{
+		
+		QueryParser parser = new QueryParser("Body", analyzer);
+		
+		System.out.println("Enter query: ");
+
+		String line = query_text;
+	
+		Query query;
+				
+		try {
+			query = parser.parse(line);
+		} catch (org.apache.lucene.queryparser.classic.ParseException e) {
+			System.out.println("Error parsing query string.");
+			return;
+		}
+		
+		
+		TopDocs results = searcher.search(query, 5);
+		ScoreDoc[] hits = results.scoreDocs;
+		
+		String header = "QueryId	 Q0		DocId	 Rank	 Score	 RunId ";
+
+		int numTotalHits = results.totalHits;
+		System.out.println(numTotalHits + " total matching documents");
+		
+		String line_string = "";
+		
+		System.out.println(header);
+		
+		for (int j = 0; j < hits.length; j++) {
+			try {
+									
+				String queryID = Integer.toString(query_id);
+				Document doc = searcher.doc(hits[j].doc);
+				
+				Integer AnswerId = doc.getField("AnswerId").numericValue().intValue();
+				
+				line_string = queryID + "		" + "Q0" + "	 " + AnswerId + "	 " + (j+1) + "	 " + hits[j].score + "		Run-1	";
+				System.out.println(line_string);			
+								
+				
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			
+		}
+		
+	}
+	
 
 	public void close() {
 		try {
@@ -311,5 +336,8 @@ public class Lab1_Baseline {
 			System.out.println("Error closing the index.");
 		}
 	}
+	
+	
+	
 
 }
