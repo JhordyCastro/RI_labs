@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.novasearch.tutorials.labs2018.RI_labs;
+package org.novasearch.tutorials.labs2018;
 
 import java.util.List;
 import java.io.IOException;
@@ -12,7 +12,9 @@ import java.util.Arrays;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.LowerCaseFilter;
+import org.apache.lucene.analysis.StopFilter;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.commongrams.CommonGramsFilter;
 import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
@@ -60,9 +62,9 @@ public class Lab2_Analyser extends Analyzer {
 //		tok = new StopFilter(tok, stopSet);				// removes stop words
 
 //		tok = new ShingleFilter(tok, 2, 3);				// creates word-grams with neighboring works
-//		tok = new CommonGramsFilter(tok, stopwords);	// creates word-grams with stopwords
+//		tok = new CommonGramsFilter(tok, stopWords);	// creates word-grams with stopwords
 
-// 		tok = new NGramTokenFilter(tok,2,5);			// creates unbounded n-grams
+ 		tok = new NGramTokenFilter(tok,2,5);			// creates unbounded n-grams
 //		tok = new EdgeNGramTokenFilter(tok,2,5);		// creates word-bounded n-grams
 
 //		tok = new SnowballFilter(tok, "English");		// stems workds according to the specified language

@@ -1,4 +1,4 @@
-package org.novasearch.tutorials.labs2018.RI_labs;
+package org.novasearch.tutorials.labs2018;
 //Jhordy Castro  Bruno Ramos N�41675
 
 import org.apache.lucene.analysis.Analyzer;
@@ -18,20 +18,20 @@ import org.apache.lucene.store.FSDirectory;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 
-import java.io.File;
+
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+
+
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+
 import java.util.Date;
-import java.util.List;
+
 
 public class Lab1_Baseline {
 
@@ -47,14 +47,16 @@ public class Lab1_Baseline {
 
 	public static void main(String[] args) {
 
-		Analyzer analyzer = new StandardAnalyzer(); // analizes the text and creates tokens
+		//Analyzer analyzer = new StandardAnalyzer(); // analizes the text and creates tokens
+		Analyzer analyzer = new Lab2_Analyser();
+		
 		Similarity similarity = new ClassicSimilarity(); // determines how Lucene weights terms
 		Lab1_Baseline baseline = new Lab1_Baseline();
 
 		// Create a new index
-		//baseline.openIndex(analyzer, similarity);
-		//baseline.indexDocuments();
-		//gitbaseline.close();
+		baseline.openIndex(analyzer, similarity);
+		baseline.indexDocuments();
+		baseline.close();
 
 		// Search the index
 		baseline.indexSearch(analyzer, similarity);
