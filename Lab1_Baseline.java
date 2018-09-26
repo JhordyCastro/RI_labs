@@ -16,8 +16,10 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -33,6 +35,7 @@ public class Lab1_Baseline {
 	String indexPath = "./index";
 	String docPath = "./data/Answers.csv";
 	String queriesFilePath = "./eval/queries.offline.txt";
+	String resultsPath = "./eval/results.txt";
 
 	boolean create = true;
 
@@ -46,9 +49,9 @@ public class Lab1_Baseline {
 		Lab1_Baseline baseline = new Lab1_Baseline();
 
 		// Create a new index
-		baseline.openIndex(analyzer, similarity);
-		baseline.indexDocuments();
-		baseline.close();
+		//baseline.openIndex(analyzer, similarity);
+		//baseline.indexDocuments();
+		//gitbaseline.close();
 
 		// Search the index
 		baseline.indexSearch(analyzer, similarity);
@@ -211,9 +214,18 @@ public class Lab1_Baseline {
 			{
 				// create a Buffered Reader object instance with a FileReader
 				BufferedReader br = new BufferedReader(new FileReader(queriesFilePath));
+				
+				// Writer to File
+				BufferedWriter writer = new BufferedWriter(new FileWriter(resultsPath));
 
 				// read the first line from the text file
 				String fileRead = br.readLine();
+				
+				String header = "QueryId	 Q0		DocId	 Rank	 Score	 RunId ";
+				
+				//System.out.println(header);
+				writer.write(header);
+				writer.newLine();
 
 				// loop until all lines are read
 				while (fileRead != null)
@@ -232,7 +244,7 @@ public class Lab1_Baseline {
 					
 					
 					//Parse the query
-					parseQuery(query_id, query, analyzer, searcher);
+					parseQuery(query_id, query, analyzer, searcher, writer);
 					
 
 					// read next line before looping
@@ -241,6 +253,7 @@ public class Lab1_Baseline {
 				}
 
 				// close file stream
+				writer.close();
 				br.close();
 			}
 			
@@ -258,6 +271,7 @@ public class Lab1_Baseline {
 			
 			
 			reader.close();
+			
 		} catch (IOException e) {
 			try {
 				reader.close();
@@ -275,7 +289,7 @@ public class Lab1_Baseline {
 	 * Parses each Query individually
 	 * 
 	 */
-	public void parseQuery(int query_id, String query_text, Analyzer analyzer, IndexSearcher searcher) throws IOException{
+	public void parseQuery(int query_id, String query_text, Analyzer analyzer, IndexSearcher searcher, BufferedWriter writer) throws IOException{
 		
 		QueryParser parser = new QueryParser("Body", analyzer);
 		
@@ -296,14 +310,15 @@ public class Lab1_Baseline {
 		TopDocs results = searcher.search(query, 5);
 		ScoreDoc[] hits = results.scoreDocs;
 		
-		String header = "QueryId	 Q0		DocId	 Rank	 Score	 RunId ";
+		
 
 		int numTotalHits = results.totalHits;
 		System.out.println(numTotalHits + " total matching documents");
 		
 		String line_string = "";
 		
-		System.out.println(header);
+		
+		
 		
 		for (int j = 0; j < hits.length; j++) {
 			try {
@@ -314,8 +329,9 @@ public class Lab1_Baseline {
 				Integer AnswerId = doc.getField("AnswerId").numericValue().intValue();
 				
 				line_string = queryID + "		" + "Q0" + "	 " + AnswerId + "	 " + (j+1) + "	 " + hits[j].score + "		Run-1	";
-				System.out.println(line_string);			
-								
+				//System.out.println(line_string);			
+				writer.write(line_string);	
+				writer.newLine();
 				
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
