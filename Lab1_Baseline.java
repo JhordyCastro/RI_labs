@@ -1,4 +1,5 @@
-package org.novasearch.tutorials.labs2018;
+package org.novasearch.tutorials.labs2018.RI_labs;
+//Jhordy Castro  Bruno Ramos Nº41675
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -22,30 +23,31 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Lab1_Baseline {
 
 	String indexPath = "./index";
-	String docPath = "./eval/Answers.csv";
+	String docPath = "./data/Answers.csv";
+	String queriesFilePath = "./eval/queries.offline.txt";
 
 	boolean create = true;
 
-	private IndexWriter idx;
+	private IndexWriter idx; //creates or maintains the index
 
 	public static void main(String[] args) {
 
-		Analyzer analyzer = new StandardAnalyzer();
-		Similarity similarity = new ClassicSimilarity();
-
+		Analyzer analyzer = new StandardAnalyzer(); // analizes the text and creates tokens
+		Similarity similarity = new ClassicSimilarity(); // determines how Lucene weights terms
+		//List<Results> textFileResults = new ArrayList<>();
 		Lab1_Baseline baseline = new Lab1_Baseline();
 
 		// Create a new index
 		baseline.openIndex(analyzer, similarity);
 		baseline.indexDocuments();
 		baseline.close();
-		
-		//Teste Update Git
 
 		// Search the index
 		baseline.indexSearch(analyzer, similarity);
@@ -160,14 +162,14 @@ public class Lab1_Baseline {
 			} catch (ParseException e1) {
 				System.out.println("Error parsing date for document " + AnswerId);
 			}
-
+				
 			// Extract field ParentId
 			start = end + 1;
 			end = rawDocument.indexOf(',', start);
 			aux = rawDocument.substring(start, end);
 			Integer ParentId = Integer.decode(aux);
 			doc.add(new IntPoint("ParentId", ParentId));
-
+					
 			// Extract field Score
 			start = end + 1;
 			end = rawDocument.indexOf(',', start);
@@ -206,7 +208,13 @@ public class Lab1_Baseline {
 
 			BufferedReader in = null;
 			in = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
-
+			BufferedReader fReader = new BufferedReader(new FileReader(queriesFilePath));
+			
+			//BufferedReader in2 = null;
+			//String n_docPath = "./eval/queries.offline.txt";
+			//BufferedReader in2 = new BufferedReader(new InputStreamReader(n_docPath, StandardCharsets.UTF_8));
+			
+			
 			QueryParser parser = new QueryParser("Body", analyzer);
 			while (true) {
 				System.out.println("Enter query: ");
@@ -221,7 +229,8 @@ public class Lab1_Baseline {
 				if (line.length() == 0) {
 					break;
 				}
-
+			
+				
 				Query query;
 				try {
 					query = parser.parse(line);
@@ -229,21 +238,55 @@ public class Lab1_Baseline {
 					System.out.println("Error parsing query string.");
 					continue;
 				}
-
-				TopDocs results = searcher.search(query, 100);
+				
+				
+				TopDocs results = searcher.search(query, 5);
 				ScoreDoc[] hits = results.scoreDocs;
+				
+				String header = "QueryId	Q0	DocId	Rank	Score	RunId ";
 
 				int numTotalHits = results.totalHits;
 				System.out.println(numTotalHits + " total matching documents");
-
+				
+				String line_string = "";
+				//Integer queryID = 0;
+				System.out.println(header);
+				
 				for (int j = 0; j < hits.length; j++) {
-					Document doc = searcher.doc(hits[j].doc);
-					String answer = doc.get("Body");
-					Integer AnswerId = doc.getField("AnswerId").numericValue().intValue();
+					try {
+						String fileLines = fReader.readLine(); // The first line is dummy
+					//while(fileLines != null){
+							
+							//String [] queryParts = fileLines.split(":");
+							//queryID = Integer.parseInt(queryParts[0]);
+							Document doc = searcher.doc(hits[j].doc);
+							//String answer = doc.get("Body");
+							Integer AnswerId = doc.getField("AnswerId").numericValue().intValue();
+							//Integer queryid = doc.getField("QueryId").numericValue().intValue();
+							
+							
+							line_string = "QueryID  " + queryid+	" QO 	" + AnswerId + "	" + (j+1) + "	" + hits[j].score + "		Run-1	";
+							System.out.println(line_string);
+						
+						//}
+						
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					
+					
+					/*Integer AnswerId = doc.getField("AnswerId").numericValue().intValue();
+					
+					
+					System.out.println("AnswerId:	"+ AnswerId);
+					
+					System.out.println("Rank: " + (j+1));
+					System.out.println("Score: " + hits[j].score);
 					System.out.println("------------------------------------------");
-					System.out.println("AnswerId: " + AnswerId);
+					
 					System.out.println("Answer: " + answer);
-					System.out.println();
+					System.out.println();*/
 				}
 
 				if (line.equals("")) {

@@ -1,4 +1,4 @@
-package org.novasearch.tutorials.labs2018;
+package org.novasearch.tutorials.labs2018.RI_labs;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;

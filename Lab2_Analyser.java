@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.novasearch.tutorials.labs;
+package org.novasearch.tutorials.labs2018.RI_labs;
 
 import java.util.List;
 import java.io.IOException;
