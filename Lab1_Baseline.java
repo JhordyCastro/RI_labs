@@ -6,6 +6,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -47,16 +48,16 @@ public class Lab1_Baseline {
 
 	public static void main(String[] args) {
 
-		//Analyzer analyzer = new StandardAnalyzer(); // analizes the text and creates tokens
-		Analyzer analyzer = new Lab2_Analyser();
+		Analyzer analyzer = new StandardAnalyzer(); // analizes the text and creates tokens
+		//Analyzer analyzer = new Lab2_Analyser();
 		
 		Similarity similarity = new ClassicSimilarity(); // determines how Lucene weights terms
 		Lab1_Baseline baseline = new Lab1_Baseline();
 
 		// Create a new index
-		baseline.openIndex(analyzer, similarity);
-		baseline.indexDocuments();
-		baseline.close();
+		//baseline.openIndex(analyzer, similarity);
+		//baseline.indexDocuments();
+		//baseline.close();
 
 		// Search the index
 		baseline.indexSearch(analyzer, similarity);
@@ -222,7 +223,7 @@ public class Lab1_Baseline {
 			{
 				// create a Buffered Reader object instance with a FileReader
 				BufferedReader br = new BufferedReader(new FileReader(queriesFilePath));
-	// Writer to File
+				// Writer to File
 				BufferedWriter writer = new BufferedWriter(new FileWriter(resultsPath));
 
 
@@ -302,6 +303,8 @@ public class Lab1_Baseline {
 		
 		QueryParser parser = new QueryParser("Body", analyzer);
 		System.out.println("Enter query: ");
+		System.out.println(query_text);
+		
 
 		String line = query_text;
 	
@@ -314,6 +317,9 @@ public class Lab1_Baseline {
 			return;
 		}
 		
+		System.out.println(query.toString());
+		System.out.println();
+		
 		
 		TopDocs results = searcher.search(query, 5);
 		ScoreDoc[] hits = results.scoreDocs;
@@ -322,10 +328,9 @@ public class Lab1_Baseline {
 
 		int numTotalHits = results.totalHits;
 		System.out.println(numTotalHits + " total matching documents");
+		System.out.println();
 		
 		String line_string = "";
-		
-		
 		
 		
 		
@@ -334,8 +339,19 @@ public class Lab1_Baseline {
 				
 				String queryID = Integer.toString(query_id);
 				Document doc = searcher.doc(hits[j].doc);
+				Explanation explain = searcher.explain(query, j);
+				
+				
+				
+				System.out.println(explain.toString());
 				
 				Integer AnswerId = doc.getField("AnswerId").numericValue().intValue();
+				
+				
+				//System.out.println(doc.getFields());
+				
+				//System.out.println(doc.getField("Body").stringValue());
+				
 				
 				line_string = queryID + "		" + "Q0" + "	 " + AnswerId + "	 " + (j+1) + "	 " + hits[j].score + "		Run-1	";
 
