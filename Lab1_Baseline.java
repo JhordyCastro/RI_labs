@@ -6,6 +6,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -48,8 +49,10 @@ public class Lab1_Baseline {
 	public static void main(String[] args) {
 
 		Analyzer analyzer = new StandardAnalyzer(); // analizes the text and creates tokens
+		//Analyzer analyzer = new Lab2_Analyser(); // analizes the text and creates tokens
 		Similarity similarity = new ClassicSimilarity(); // determines how Lucene weights terms
 		Lab1_Baseline baseline = new Lab1_Baseline();
+		
 
 		// Create a new index
 		//baseline.openIndex(analyzer, similarity);
@@ -220,7 +223,7 @@ public class Lab1_Baseline {
 			{
 				// create a Buffered Reader object instance with a FileReader
 				BufferedReader br = new BufferedReader(new FileReader(queriesFilePath));
-	// Writer to File
+				// Writer to File
 				BufferedWriter writer = new BufferedWriter(new FileWriter(resultsPath));
 
 
@@ -313,7 +316,7 @@ public class Lab1_Baseline {
 		}
 		
 		
-		TopDocs results = searcher.search(query, 5);
+		TopDocs results = searcher.search(query, 10);
 		ScoreDoc[] hits = results.scoreDocs;
 		
 		
@@ -322,9 +325,6 @@ public class Lab1_Baseline {
 		System.out.println(numTotalHits + " total matching documents");
 		
 		String line_string = "";
-		
-		
-		
 		
 		
 		for (int j = 0; j < hits.length; j++) {
@@ -358,5 +358,6 @@ public class Lab1_Baseline {
 			System.out.println("Error closing the index.");
 		}
 	}
+	
 	
 }
