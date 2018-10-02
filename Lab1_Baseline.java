@@ -1,5 +1,5 @@
 package org.novasearch.tutorials.labs2018.RI_labs;
-//Jhordy Castro  Bruno Ramos N�41675
+//Jhordy Castro  Bruno Ramos 
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -15,24 +15,25 @@ import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.jsoup.Jsoup;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 
-import java.io.File;
+
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+
+
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+
 import java.util.Date;
-import java.util.List;
+
 
 public class Lab1_Baseline {
 
@@ -48,16 +49,18 @@ public class Lab1_Baseline {
 
 	public static void main(String[] args) {
 
-		Analyzer analyzer = new StandardAnalyzer(); // analizes the text and creates tokens
-		//Analyzer analyzer = new Lab2_Analyser(); // analizes the text and creates tokens
+		//Analyzer analyzer = new StandardAnalyzer(); // analizes the text and creates tokens
+
+		Analyzer analyzer = new Lab2_Analyser(); // analizes the text and creates tokens
+
 		Similarity similarity = new ClassicSimilarity(); // determines how Lucene weights terms
 		Lab1_Baseline baseline = new Lab1_Baseline();
 		
 
 		// Create a new index
-		//baseline.openIndex(analyzer, similarity);
-		//baseline.indexDocuments();
-		//gitbaseline.close();
+		baseline.openIndex(analyzer, similarity);
+		baseline.indexDocuments();
+		baseline.close();
 
 		// Search the index
 		baseline.indexSearch(analyzer, similarity);
@@ -190,6 +193,11 @@ public class Lab1_Baseline {
 
 			// Extract field Body
 			String body = rawDocument.substring(end + 1);
+						/*Jsoup*/
+			//org.jsoup.nodes.Document doc2 = Jsoup.parse(body);
+			//String body2 = doc2.body().text();
+			//doc.add(new TextField("Body",body2,Field.Store.YES));
+						/*Jsoup*/
 			doc.add(new TextField("Body", body, Field.Store.YES));
 
 		// ====================================================
@@ -303,6 +311,8 @@ public class Lab1_Baseline {
 		
 		QueryParser parser = new QueryParser("Body", analyzer);
 		System.out.println("Enter query: ");
+		System.out.println(query_text);
+		
 
 		String line = query_text;
 	
@@ -315,6 +325,9 @@ public class Lab1_Baseline {
 			return;
 		}
 		
+		System.out.println(query.toString());
+		System.out.println();
+		
 		
 		TopDocs results = searcher.search(query, 10);
 		ScoreDoc[] hits = results.scoreDocs;
@@ -323,17 +336,28 @@ public class Lab1_Baseline {
 
 		int numTotalHits = results.totalHits;
 		System.out.println(numTotalHits + " total matching documents");
+		System.out.println();
 		
 		String line_string = "";
-		
 		
 		for (int j = 0; j < hits.length; j++) {
 			try {
 				
 				String queryID = Integer.toString(query_id);
 				Document doc = searcher.doc(hits[j].doc);
+				Explanation explain = searcher.explain(query, j);
+				
+				
+				
+				System.out.println(explain.toString());
 				
 				Integer AnswerId = doc.getField("AnswerId").numericValue().intValue();
+				
+				
+				//System.out.println(doc.getFields());
+				
+				System.out.println(doc.getField("Body").stringValue());
+				//System.exit(10);
 				
 				line_string = queryID + "		" + "Q0" + "	 " + AnswerId + "	 " + (j+1) + "	 " + hits[j].score + "		Run-1	";
 
